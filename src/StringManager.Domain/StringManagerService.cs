@@ -3,8 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace StringManager.Domain
 {
@@ -27,17 +26,14 @@ namespace StringManager.Domain
 
         public string GetNewString()
         {
-            var newStr = GetStringUpper(StringToConverter);
-            newStr = GetStringLower(StringToConverter);
-            newStr = GetStringFistUpper(StringToConverter);
-
-            var strSplit = GetStringsSplit(newStr);
-            var strStart = InserInStart(strSplit);
+            var strUpper = GetStringUpper(StringToConverter);
+            var strLower = GetStringLower(strUpper);
+            var strFirstUp = GetStringFistUpper(strLower);
+            var strStart = InserInStart(strFirstUp);
             var strEnd = InserInEnd(strStart);
             var strPerLine = GetStringPerLine(strEnd);
-            var strJoin = JoinStrings(strPerLine);
 
-            return strJoin;
+            return strPerLine;
         }
 
         private string JoinStrings(IList<string> strings)
@@ -45,58 +41,63 @@ namespace StringManager.Domain
             var newString = string.Empty;
 
             foreach (var str in strings)
-                newString += str;
+                newString += $"{str} ";
 
             return newString;
         }
 
-        private IList<string> GetStringsSplit(string str)
+        private string[] GetStringsSplit(string str)
         {
-            return str.Split(' ');
+            return Regex.Split(str, @"\s+");
         }
 
-        private IList<string> InserInStart(IList<string> strings)
+        private string InserInStart(string strToInsertInStart)
         {
             if (string.IsNullOrEmpty(StartWith))
-                return strings.ToList();
+                return strToInsertInStart;
 
-            var newStrings = new List<string>();
-
+            var strings = GetStringsSplit(strToInsertInStart);
             foreach (var str in strings)
-                newStrings.Add(string.Join(StartWith, str));
-
-            return newStrings;
-        }
-
-        private IList<string> InserInEnd(IList<string> strings)
-        {
-            if (string.IsNullOrEmpty(EndWith))
-                return strings.ToList();
-
-            var newStrings = new List<string>();
-
-            foreach (var str in strings)
-                newStrings.Add(string.Join(str, EndWith));
-
-            return newStrings;
-        }
-
-        private IList<string> GetStringPerLine(IList<string> strings)
-        {
-            var newStrings = new List<string>();
-
-            if (SplitPerLine)
             {
-                foreach (var strSplit in strings)
-                {
-                    var strJoin = string.Join(strSplit, "\n");
-                    newStrings.Add(strJoin);
-                }
+                if (string.IsNullOrEmpty(str)) continue;
 
-                return newStrings;
+                var breackOrSpace = strings.Last() == str ? string.Empty : GetBreakOrSpace(str, strToInsertInStart);
+                var strJoin = $"{StartWith}{str}{breackOrSpace}";
+                strToInsertInStart = strToInsertInStart.Replace($"{str}{breackOrSpace}", strJoin);
             }
 
-            return newStrings;
+            return strToInsertInStart;
+        }
+
+        private string InserInEnd(string strToInsertInEnd)
+        {
+            if (string.IsNullOrEmpty(StartWith))
+                return strToInsertInEnd;
+
+            var strings = GetStringsSplit(strToInsertInEnd);
+            foreach (var str in strings)
+            {
+                if (string.IsNullOrEmpty(str)) continue;
+
+                var breackOrSpace = strings.Last() == str ? string.Empty : GetBreakOrSpace(str, strToInsertInEnd);
+                var strJoin = $"{str}{EndWith}{breackOrSpace}";
+                strToInsertInEnd = strToInsertInEnd.Replace($"{str}{breackOrSpace}", strJoin);
+            }
+
+            return strToInsertInEnd;
+        }
+
+        private string GetStringPerLine(string stringToBreak)
+        {
+            if (!SplitPerLine)
+                return stringToBreak;
+
+            var strings = GetStringsSplit(stringToBreak);
+            var newString = string.Empty;
+            foreach (var str in strings)
+                newString += $"{str}{Environment.NewLine}";
+
+            return newString;
         }
 
         private string GetStringUpper(string str)
@@ -117,12 +118,15 @@ namespace StringManager.Domain
 
         private string GetStringFistUpper(string str)
         {
-            var strLower = str.ToLower();
-
             if (ConverterTypeEnum.FirstUpper.Equals(ConverterType))
-                return new CultureInfo("pt-BR", true).TextInfo.ToTitleCase(strLower);
+                return new CultureInfo("pt-BR", true).TextInfo.ToTitleCase(str.ToLower());
 
             return str;
+        }
+
+        private string GetBreakOrSpace(string currentStr, string fullStr)
+        {
+            return fullStr.Contains($"{currentStr}\t") ? "\t" : "\r";
         }
     }
 }

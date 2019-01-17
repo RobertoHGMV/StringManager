@@ -1,13 +1,6 @@
 ﻿using StringManager.Domain;
 using StringManager.Domain.Enums;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace StringManager.UI
@@ -49,6 +42,9 @@ namespace StringManager.UI
 
         private void SetConverterType(StringManagerParam strManagerParam)
         {
+            if (radioNone.Checked)
+                strManagerParam.ConverterType = ConverterTypeEnum.None;
+
             if (radioUpper.Checked)
                 strManagerParam.ConverterType = ConverterTypeEnum.Upper;
 
