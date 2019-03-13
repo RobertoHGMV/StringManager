@@ -105,7 +105,6 @@
             this.btnClear.Text = "Limpar";
             this.btnClear.Theme = MetroFramework.MetroThemeStyle.Light;
             this.btnClear.UseSelectable = true;
-            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
             // btnConverter
             // 
@@ -117,7 +116,6 @@
             this.btnConverter.Text = "Converter";
             this.btnConverter.Theme = MetroFramework.MetroThemeStyle.Light;
             this.btnConverter.UseSelectable = true;
-            this.btnConverter.Click += new System.EventHandler(this.btnConverter_Click);
             // 
             // metroLabel2
             // 
@@ -363,9 +361,9 @@
         private MetroFramework.Controls.MetroRadioButton radioUpper;
         private System.Windows.Forms.SplitContainer splitContainerViews;
         private MetroFramework.Controls.MetroButton btnClear;
+        private MetroFramework.Controls.MetroRadioButton radioNone;
         private MetroFramework.Controls.MetroTextBox txtStrSource;
         private MetroFramework.Controls.MetroTextBox txtStrDest;
-        private MetroFramework.Controls.MetroRadioButton radioNone;
     }
 }
 

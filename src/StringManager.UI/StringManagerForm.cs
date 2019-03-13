@@ -10,22 +10,22 @@ namespace StringManager.UI
         public StringManagerForm()
         {
             InitializeComponent();
+            SignEvents();
         }
 
-        private void btnConverter_Click(object sender, EventArgs e)
+        private void SignEvents()
         {
-            try
-            {
-                var strManagerParam = FillStrManagerParam();
-                var strManagerService = new StringManagerService(strManagerParam);
-                var stringDest = strManagerService.GetNewString();
+            btnConverter.Click += btnConverter_Click;
+            btnClear.Click += btnClear_Click;
+        }
 
-                txtStrDest.Text = stringDest;
-            }
-            catch (Exception ex)
-            {
-                MessaError(ex.Message);
-            }
+        private void ConvertString()
+        {
+            var strManagerParam = FillStrManagerParam();
+            var strManagerService = new StringManagerService(strManagerParam);
+            var stringDest = strManagerService.GetNewString();
+
+            txtStrDest.Text = stringDest;
         }
 
         private StringManagerParam FillStrManagerParam()
@@ -55,12 +55,29 @@ namespace StringManager.UI
                 strManagerParam.ConverterType = ConverterTypeEnum.FirstUpper;
         }
 
+        private void CleanFieldsString()
+        {
+            txtStrSource.Text = string.Empty;
+            txtStrDest.Text = string.Empty;
+        }
+
         private void btnClear_Click(object sender, EventArgs e)
         {
             try
             {
-                txtStrSource.Text = string.Empty;
-                txtStrDest.Text = string.Empty;
+                CleanFieldsString();
+            }
+            catch (Exception ex)
+            {
+                MessaError(ex.Message);
+            }
+        }
+
+        private void btnConverter_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ConvertString();
             }
             catch (Exception ex)
             {
